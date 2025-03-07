@@ -1,0 +1,13 @@
+# Flutter/Dart
+packages/  
+build/  
+.flutter-plugins  
+.flutter-plugins-dependencies  
+.dart_tool/  
+.idea/  
+.vscode/  
+*.iml  
+*.lock  
+*.log  
+*.tmp  
+*.DS_Store  
