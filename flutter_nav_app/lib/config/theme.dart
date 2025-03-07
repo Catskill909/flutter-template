@@ -1,6 +1,31 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
+  static final lightTheme = ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.light,
+    scaffoldBackgroundColor: Colors.white,
+    primaryColor: Colors.blue,
+    colorScheme: const ColorScheme.light(
+      primary: Colors.blue,
+      secondary: Colors.blueAccent,
+      surface: Colors.white,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+      centerTitle: true,
+    ),
+    drawerTheme: const DrawerThemeData(
+      backgroundColor: Colors.white,
+    ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: Colors.white,
+      selectedItemColor: Colors.blue,
+      unselectedItemColor: Colors.grey,
+    ),
+  );
+
   static final darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,

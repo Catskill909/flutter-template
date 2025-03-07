@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import '../config/theme.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
-      color: AppTheme.screenColors[3],
-      child: const Center(
+      color: theme.colorScheme.surface,
+      child: Center(
         child: Text(
           'Profile Screen',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: theme.colorScheme.onSurface,
           ),
         ),
       ),
