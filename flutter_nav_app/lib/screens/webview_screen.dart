@@ -17,7 +17,7 @@ class WebViewScreen extends StatefulWidget {
 }
 
 class _WebViewScreenState extends State<WebViewScreen> {
-  late final WebViewController _controller;
+  late WebViewController _controller;
   bool _isLoading = true;
   String get _sanitizedUrl => widget.url.startsWith('http') ? widget.url : 'https://${widget.url}';
 
@@ -25,20 +25,23 @@ class _WebViewScreenState extends State<WebViewScreen> {
   void initState() {
     super.initState();
     if (!kIsWeb) {
-      _controller = WebViewController()
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..setBackgroundColor(Theme.of(context).scaffoldBackgroundColor)
-        ..setNavigationDelegate(
-          NavigationDelegate(
-            onPageStarted: (_) => setState(() => _isLoading = true),
-            onPageFinished: (_) => setState(() => _isLoading = false),
-            onNavigationRequest: (_) => NavigationDecision.navigate,
-          ),
-        )
-        ..loadRequest(Uri.parse(_sanitizedUrl));
+      _initController();
     } else {
       _launchUrl();
     }
+  }
+
+  void _initController() {
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (_) => setState(() => _isLoading = true),
+          onPageFinished: (_) => setState(() => _isLoading = false),
+          onNavigationRequest: (_) => NavigationDecision.navigate,
+        ),
+      )
+      ..loadRequest(Uri.parse(_sanitizedUrl));
   }
 
   Future<void> _launchUrl() async {

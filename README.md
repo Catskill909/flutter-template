@@ -4,44 +4,51 @@ A modern Flutter application template featuring a consistent dark theme, platfor
 
 ## Features
 
-### Dark Mode
-- Consistent dark theme across all screens
+### Dark Mode Implementation
+- Consistent dark theme across all screens using `ThemeMode.dark`
 - Custom color scheme with proper contrast ratios
-- Themed components including:
-  - App bars and navigation elements
-  - Bottom navigation bar
-  - Drawer menu
-  - WebView interface
+- Theme-aware components:
+  - App bars with surface colors
+  - Bottom navigation with primary/surface colors
+  - Drawer menu with themed list items
+  - WebView with dark mode support
+- Text colors using `colorScheme.onSurface`
 
-### Navigation System
+### Navigation Architecture
 1. **Bottom Navigation Bar**
-   - Home screen with main content
-   - Explore section
-   - Notifications center
-   - User profile
+   - Home (0): Main content view
+   - Explore (1): Discovery section
+   - Notifications (2): Updates center
+   - Profile (3): User settings
+   - Uses `IndexedStack` for view management
 
 2. **Side Drawer Menu**
-   - Quick access to main sections
+   - Matches bottom tab navigation order
    - External links with WebView integration
-   - Modern dark-themed design
-   - Custom styled list items
+   - Dark-themed design with proper contrast
+   - Custom styled list items with icons
 
-### WebView Implementation
-- **Platform-Specific Approach**:
-  - Mobile (iOS/Android): Native in-app browser using `webview_flutter`
-  - Web: External browser tabs using `url_launcher`
-- **Features**:
+### WebView Features
+- **Platform-Specific Implementation**:
+  - iOS/Android: Native in-app browser (`webview_flutter`)
+  - Web: External browser tabs (`url_launcher`)
+- **Enhanced Functionality**:
   - Loading indicators with themed colors
-  - Native share functionality
-  - Back navigation
+  - Native share sheet integration
+  - Back navigation with state preservation
   - Error handling for failed URL launches
+  - URL sanitization and validation
 
 ### Dependencies
-- `webview_flutter`: ^4.10.0
-- `webview_flutter_web`: ^0.2.3+4
-- `url_launcher`: ^6.2.5
-- `share_plus`: ^7.2.2
-- `provider`: State management
+```yaml
+dependencies:
+  webview_flutter: ^4.10.0
+  webview_flutter_web: ^0.2.3+4
+  url_launcher: ^6.2.5
+  share_plus: ^10.1.4
+  provider: ^6.1.2
+  cupertino_icons: ^1.0.8
+```
 
 ## Getting Started
 
@@ -62,13 +69,23 @@ A modern Flutter application template featuring a consistent dark theme, platfor
 
 4. Run the app:
    ```bash
+   # Debug mode
    flutter run
+   
+   # Release mode
+   flutter run --release
    ```
 
 ## Platform Support
-- ✅ iOS
+- ✅ iOS (Tested on latest devices)
 - ✅ Android
-- ✅ Web
+- ✅ Web (Progressive enhancement)
+
+## Development Notes
+- Uses Flutter SDK: '>=3.2.3 <4.0.0'
+- Implements platform-specific behavior detection
+- Follows Material Design 3 guidelines
+- Maintains consistent theming across all platforms
 
 ## Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
