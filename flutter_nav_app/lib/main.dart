@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_nav_app/utils/navigation_provider.dart';
-import 'package:flutter_nav_app/config/theme.dart';
-import 'package:flutter_nav_app/screens/home_screen.dart';
+import 'utils/navigation_provider.dart';
+import 'utils/size_config.dart';
+import 'config/theme.dart';
+import 'screens/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,13 +16,41 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => NavigationProvider(),
-      child: MaterialApp(
-        title: 'Flutter Navigation App',
-        theme: AppTheme.darkTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.dark,
-        home: const HomeScreen(),
+      child: ResponsiveApp(
+        child: Builder(builder: (context) {
+          return MaterialApp(
+            title: 'Flutter Navigation App',
+            theme: AppTheme.getTheme(context, false),
+            darkTheme: AppTheme.getTheme(context, true),
+            themeMode: ThemeMode.dark,
+            home: const HomeScreen(),
+          );
+        }),
       ),
+    );
+  }
+}
+
+/// Wrapper widget that handles responsive sizing initialization
+class ResponsiveApp extends StatelessWidget {
+  final Widget child;
+
+  const ResponsiveApp({
+    super.key,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return OrientationBuilder(
+          builder: (context, orientation) {
+            SizeConfig.init(context);
+            return child;
+          },
+        );
+      },
     );
   }
 }

@@ -1,0 +1,75 @@
+{
+    "drawer": {
+        "header": {
+            "title": "Navigation Menu",
+            "icon": "person",
+            "backgroundColor": "#1E2530"
+        },
+        "sections": [
+            {
+                "name": "Main Navigation",
+                "items": [
+                    {
+                        "title": "Home",
+                        "icon": "home",
+                        "type": "internal",
+                        "route": 0
+                    },
+                    {
+                        "title": "Explore",
+                        "icon": "explore",
+                        "type": "internal",
+                        "route": 1
+                    },
+                    {
+                        "title": "Notifications",
+                        "icon": "notifications",
+                        "type": "internal",
+                        "route": 2
+                    },
+                    {
+                        "title": "Profile",
+                        "icon": "person",
+                        "type": "internal",
+                        "route": 3
+                    }
+                ]
+            },
+            {
+                "name": "External Links",
+                "items": [
+                    {
+                        "title": "Old Skool Sessions",
+                        "icon": "music_note",
+                        "type": "external",
+                        "url": "https://oldskoolsessions.com"
+                    },
+                    {
+                        "title": "Starkey Website",
+                        "icon": "web",
+                        "type": "external",
+                        "url": "https://starkey.website"
+                    },
+                    {
+                        "title": "SuperSoul Live",
+                        "icon": "live_tv",
+                        "type": "external",
+                        "url": "https://supersoul.live"
+                    },
+                    {
+                        "title": "SuperSoul Stream",
+                        "icon": "stream",
+                        "type": "external",
+                        "url": "https://supersoul.stream"
+                    },
+                    {
+                        "title": "Twitch Stream",
+                        "icon": "stream",
+                        "type": "external",
+                        "url": "https://www.twitch.tv/oldskoolsessions"
+                    }
+                ]
+            }
+        ]
+    }
+}

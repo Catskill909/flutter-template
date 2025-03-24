@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../utils/navigation_provider.dart';
 import '../screens/webview_screen.dart';
+import '../models/navigation/menu_item.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -19,6 +20,24 @@ class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final navigationProvider = Provider.of<NavigationProvider>(context);
+
+    if (navigationProvider.isLoading) {
+      return const Drawer(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    final config = navigationProvider.config;
+    if (config == null) {
+      return const Drawer(
+        child: Center(
+          child: Text('Error loading navigation configuration'),
+        ),
+      );
+    }
+
     return Drawer(
       backgroundColor: Theme.of(context).colorScheme.surface,
       child: ListView(
@@ -26,7 +45,8 @@ class CustomDrawer extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Color(0xFF1E2530),
+              color: Color(int.parse(config.drawer.header.backgroundColor
+                  .replaceAll('#', '0xFF'))),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -35,15 +55,15 @@ class CustomDrawer extends StatelessWidget {
                   radius: 40,
                   backgroundColor: Color(0xFF2A3441),
                   child: Icon(
-                    Icons.person,
+                    _getIconData(config.drawer.header.icon),
                     size: 40,
                     color: Color(0xFF64B5F6),
                   ),
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Navigation Menu',
-                  style: TextStyle(
+                  config.drawer.header.title,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -52,85 +72,99 @@ class CustomDrawer extends StatelessWidget {
               ],
             ),
           ),
-          ListTile(
-            selected: navigationProvider.currentIndex == 0,
-            selectedTileColor: Color(0xFF2A3441),
-            leading: Icon(Icons.home, color: navigationProvider.currentIndex == 0 ? Color(0xFF64B5F6) : Colors.white70),
-            title: Text('Home', style: TextStyle(color: Colors.white)),
-            onTap: () {
-              navigationProvider.setIndex(0);
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            selected: navigationProvider.currentIndex == 1,
-            selectedTileColor: Color(0xFF2A3441),
-            leading: Icon(Icons.explore, color: navigationProvider.currentIndex == 1 ? Color(0xFF64B5F6) : Colors.white70),
-            title: Text('Explore', style: TextStyle(color: Colors.white)),
-            onTap: () {
-              navigationProvider.setIndex(1);
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            selected: navigationProvider.currentIndex == 2,
-            selectedTileColor: Color(0xFF2A3441),
-            leading: Icon(Icons.notifications, color: navigationProvider.currentIndex == 2 ? Color(0xFF64B5F6) : Colors.white70),
-            title: Text('Notifications', style: TextStyle(color: Colors.white)),
-            onTap: () {
-              navigationProvider.setIndex(2);
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            selected: navigationProvider.currentIndex == 3,
-            selectedTileColor: Color(0xFF2A3441),
-            leading: Icon(Icons.person, color: navigationProvider.currentIndex == 3 ? Color(0xFF64B5F6) : Colors.white70),
-            title: Text('Profile', style: TextStyle(color: Colors.white)),
-            onTap: () {
-              navigationProvider.setIndex(3);
-              Navigator.pop(context);
-            },
-          ),
-          const Divider(),
-          ListTile(
-            leading: Icon(Icons.music_note, color: Colors.white70),
-            title: Text('Old Skool Sessions', style: TextStyle(color: Colors.white)),
-            onTap: () => _openWebView(
-              context,
-              'https://oldskoolsessions.com',
-              'Old Skool Sessions',
+          ...config.drawer.sections.expand((section) {
+            final items = <Widget>[];
+
+            // Add section header if there's more than one section
+            if (config.drawer.sections.length > 1) {
+              items.add(
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                  child: Text(
+                    section.name,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: Colors.white70,
+                        ),
+                  ),
+                ),
+              );
+            }
+
+            // Add menu items
+            items.addAll(
+              section.items.map((item) => _buildMenuItem(
+                    context,
+                    item,
+                    navigationProvider,
+                  )),
+            );
+
+            // Add divider after each section except the last one
+            if (section != config.drawer.sections.last) {
+              items.add(const Divider(height: 16));
+            }
+
+            return items;
+          }),
+          if (navigationProvider.error != null)
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Warning: ${navigationProvider.error!.message}',
+                style: TextStyle(
+                  color: Colors.orange[300],
+                  fontSize: 12,
+                ),
+              ),
             ),
-          ),
-          ListTile(
-            leading: Icon(Icons.web, color: Colors.white70),
-            title: Text('Starkey Website', style: TextStyle(color: Colors.white)),
-            onTap: () => _openWebView(
-              context,
-              'https://starkey.website',
-              'Starkey Website',
-            ),
-          ),
-          ListTile(
-            leading: Icon(Icons.live_tv, color: Colors.white70),
-            title: Text('SuperSoul Live', style: TextStyle(color: Colors.white)),
-            onTap: () => _openWebView(
-              context,
-              'https://supersoul.live',
-              'SuperSoul Live',
-            ),
-          ),
-          ListTile(
-            leading: Icon(Icons.stream, color: Colors.white70),
-            title: Text('SuperSoul Stream', style: TextStyle(color: Colors.white)),
-            onTap: () => _openWebView(
-              context,
-              'https://supersoul.stream',
-              'SuperSoul Stream',
-            ),
-          ),
         ],
       ),
     );
+  }
+
+  Widget _buildMenuItem(
+    BuildContext context,
+    MenuItem item,
+    NavigationProvider navigationProvider,
+  ) {
+    final isInternal = item.type == MenuItemType.internal;
+    final isSelected =
+        isInternal && navigationProvider.currentIndex == item.route;
+
+    return ListTile(
+      selected: isSelected,
+      selectedTileColor: const Color(0xFF2A3441),
+      leading: Icon(
+        _getIconData(item.icon),
+        color: isSelected ? const Color(0xFF64B5F6) : Colors.white70,
+      ),
+      title: Text(item.title, style: const TextStyle(color: Colors.white)),
+      onTap: () {
+        if (isInternal) {
+          navigationProvider.setIndex(item.route!);
+          Navigator.pop(context);
+        } else if (item.url != null) {
+          _openWebView(context, item.url!, item.title);
+        }
+      },
+    );
+  }
+
+  IconData _getIconData(String iconName) {
+    // Add more icon mappings as needed
+    final iconMap = {
+      'home': Icons.home,
+      'explore': Icons.explore,
+      'notifications': Icons.notifications,
+      'person': Icons.person,
+      'menu': Icons.menu,
+      'music_note': Icons.music_note,
+      'web': Icons.web,
+      'live_tv': Icons.live_tv,
+      'stream': Icons.stream,
+      'error': Icons.error,
+    };
+
+    return iconMap[iconName] ?? Icons.error;
   }
 }
